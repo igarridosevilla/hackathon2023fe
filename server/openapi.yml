@@ -1,0 +1,89 @@
+openapi: 3.0.0
+info:
+  title: Chatbot REST API
+  version: 1.0.0
+  description: REST API for managing chatbot sessions and retrieving historical data.
+
+servers:
+  - url: http://localhost:5000
+    description: Production server for the Chatbot REST API
+
+paths:
+  /startSession:
+    post:
+      summary: Starts a new chatbot session
+      responses:
+        200:
+          description: Session successfully started
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    description: Unique session identifier
+
+  /getHistory:
+    get:
+      summary: Retrieves the conversation history for a session
+      parameters:
+        - name: sessionId
+          in: query
+          required: true
+          description: Unique identifier for the session
+          schema:
+            type: string
+      responses:
+        200:
+          description: Conversation history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  history:
+                    type: array
+                    items:
+                      type: string
+        404:
+          description: Session not found
+
+  /getUserInfo:
+    get:
+      summary: Retrieves user information for a given session
+      parameters:
+        - name: sessionId
+          in: query
+          required: true
+          description: Unique identifier for the session
+          schema:
+            type: string
+      responses:
+        200:
+          description: User information retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  surname:
+                    type: string
+                  address:
+                    type: string
+                  job:
+                    type: string
+        404:
+          description: Session not found
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-KEY
+
+security:
+  - ApiKeyAuth: []
