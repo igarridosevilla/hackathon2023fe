@@ -9,6 +9,9 @@ import {
 } from "@mui/material";
 // import SendIcon from '@mui/icons-material/Send';
 import ChatIcon from "@mui/icons-material/Chat";
+import IconButton from "@mui/material/Button";
+import SendIcon from "@mui/icons-material/Send";
+import Box from "@mui/material/Box";
 
 const ChatApp = () => {
   const [messages, setMessages] = useState([]);
@@ -86,24 +89,28 @@ const ChatApp = () => {
       </Grid>
 
       {/* Área de entrada de texto */}
-      <Grid item xs={12} md={12}>
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ width: "100%", padding: "16px" }} // Set the width to 100%
+      >
         <TextField
-          label="Escribe un mensaje"
+          autoComplete="given-name"
+          name="firstName"
           fullWidth
+          id="firstName"
+          label="Message GP-T2 ..."
+          autoFocus
+          multiline
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        {/* <Button
-            variant='contained'
-            color='primary'
-            style={{ marginTop: 16, width: '100%' }}
-            endIcon={<SendIcon />}
-            onClick={handleSendMessage}
-          >
-            Enviar
-          </Button> */}
-      </Grid>
+        <IconButton aria-label="send">
+          <SendIcon />
+        </IconButton>
+      </Box>
     </Grid>
   );
 };
