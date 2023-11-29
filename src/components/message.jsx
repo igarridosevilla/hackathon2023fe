@@ -1,12 +1,5 @@
-import React, { useState } from "react";
-import {
-  TextField,
-  Button,
-  Paper,
-  Typography,
-  Grid,
-  Avatar,
-} from "@mui/material";
+import React, { useState, useRef, useEffect } from "react";
+import { TextField, Paper, Typography, Grid, Avatar } from "@mui/material";
 // import SendIcon from '@mui/icons-material/Send';
 import ChatIcon from "@mui/icons-material/Chat";
 import IconButton from "@mui/material/Button";
@@ -15,18 +8,30 @@ import Box from "@mui/material/Box";
 
 const ChatApp = () => {
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState('');
+  const [newMessage, setNewMessage] = useState("");
+  const paperRef = useRef();
+
+  useEffect(() => {
+    if (paperRef.current) {
+      // Scroll to the bottom of the Paper component
+      paperRef.current.scrollTop = paperRef.current.scrollHeight;
+    }
+  }, [messages]);
 
   const handleSendMessage = () => {
-    if (newMessage.trim() !== '') {
-      setMessages([...messages, { text: newMessage, sender: 'user' }]);
-      setNewMessage('');
+    if (paperRef.current) {
+      paperRef.current.scrollTop = paperRef.current.scrollHeight;
+    }
+
+    if (newMessage.trim() !== "") {
+      setMessages([...messages, { text: newMessage, sender: "user" }]);
+      setNewMessage("");
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
+    if (e.key === "Enter") {
+      e.preventDefault(); // Evita que se agregue un salto de línea al textarea
       handleSendMessage();
     }
   };
@@ -35,13 +40,13 @@ const ChatApp = () => {
     <Avatar style={{ margin: 8 }}>
       <Avatar
         src={
-          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F59%2FUser-avatar.svg%2F800px-User-avatar.svg.png&tbnid=QhTI36alBacoyM&vet=12ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz..i&imgrefurl=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AUser-avatar.svg&docid=jkSSRW6HEZViEM&w=800&h=800&q=user%20avatar&ved=2ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz'
+          "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F59%2FUser-avatar.svg%2F800px-User-avatar.svg.png&tbnid=QhTI36alBacoyM&vet=12ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz..i&imgrefurl=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AUser-avatar.svg&docid=jkSSRW6HEZViEM&w=800&h=800&q=user%20avatar&ved=2ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz"
         }
-        alt='User Avatar'
+        alt="User Avatar"
         style={{
-          width: '100%',
-          height: '100%',
-          borderRadius: '50%',
+          width: "100%",
+          height: "100%",
+          borderRadius: "50%",
         }}
       />
     </Avatar>
@@ -54,39 +59,45 @@ const ChatApp = () => {
   );
 
   return (
-    <Grid container spacing={2}>
+    <Grid
+      container
+      spacing={2}
+      sx={{
+        marginTop: 12,
+      }}
+    >
       {/* Zona de mensajes */}
       <Grid
         item
         xs={12}
         md={12}
         style={{
-          display: 'flex',
-          height: '70vh',
+          display: "flex",
+          height: "100vh",
         }}
       >
         <Paper
+          ref={paperRef}
           style={{
             flex: 1,
-            overflowY: 'auto',
-            padding: 16,
-            borderRadius: '3%',
+            overflowY: "auto",
+            height: "calc(100% - 232px)",
           }}
         >
           {messages.map((message, index) => (
             <div
               key={index}
               style={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 marginBottom: 16,
               }}
             >
-              {message.sender === 'user' ? <UserAvatar /> : <BotAvatar />}
+              {message.sender === "user" ? <UserAvatar /> : <BotAvatar />}
               <Typography
-                variant='body1'
-                color={message.sender === 'user' ? 'primary' : 'textSecondary'}
-                style={{ marginLeft: message.sender === 'bot' ? 8 : 0 }}
+                variant="body1"
+                color={message.sender === "user" ? "primary" : "textSecondary"}
+                style={{ marginLeft: message.sender === "bot" ? 8 : 0 }}
               >
                 {message.text}
               </Typography>
@@ -100,7 +111,13 @@ const ChatApp = () => {
         display="flex"
         alignItems="center"
         justifyContent="space-between"
-        sx={{ width: "100%", padding: "16px" }} // Set the width to 100%
+        sm={2}
+        sx={{
+          width: "70%",
+          padding: "16px",
+          position: "absolute",
+          bottom: "16px",
+        }} // Set the width to 100%
       >
         <TextField
           autoComplete="given-name"
@@ -114,7 +131,12 @@ const ChatApp = () => {
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
         />
-        <IconButton aria-label="send">
+        <IconButton
+          aria-label="send"
+          sx={{
+            height: "56px",
+          }}
+        >
           <SendIcon />
         </IconButton>
       </Box>

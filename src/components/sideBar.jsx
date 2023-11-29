@@ -1,8 +1,8 @@
-import React from 'react';
-import { Container, Avatar, Typography, IconButton } from '@mui/material';
-import PhoneIcon from '@mui/icons-material/Phone';
-import EmailIcon from '@mui/icons-material/Email';
-import Link from '@mui/material/Link';
+import React from "react";
+import { Container, Avatar, Typography, IconButton } from "@mui/material";
+import PhoneIcon from "@mui/icons-material/Phone";
+import EmailIcon from "@mui/icons-material/Email";
+import Link from "@mui/material/Link";
 
 const iconStyle = {
   fontSize: 30,
@@ -11,54 +11,59 @@ const iconStyle = {
 export default function SideBar({ user }) {
   return (
     <Container
-      component='agentSideBar'
-      maxWidth='xs'
+      component="agentSideBar"
+      maxWidth="xs"
       sx={{
         marginTop: 8,
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        minHeight: '30vh',
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
       }}
-      style={{ minHeight: '50vh' }}
     >
       {user?.avatar && (
         <Avatar
           alt={user?.avatar.alt}
-          sx={{ m: 1, bgcolor: 'secondary.main', width: 120, height: 120 }}
+          sx={{ m: 1, bgcolor: "secondary.main", width: 120, height: 120 }}
           src={user?.avatar.src}
         />
       )}
-      <Typography variant='h5' gutterBottom style={{ marginTop: 16 }}>
-        {user?.name}
-      </Typography>
-      <Typography variant='h7' color='textSecondary' gutterBottom>
-        {user?.description}
-      </Typography>
-      <Link
-        href='https://mui.com/material-ui/getting-started/templates/'
-        underline='hover'
-      >
-        {user?.phone}
-      </Link>
-
+      {user?.name && (
+        <Typography variant="h5" gutterBottom style={{ marginTop: 16 }}>
+          {user?.name}
+        </Typography>
+      )}
+      {user?.description && (
+        <Typography variant="h7" color="textSecondary" gutterBottom>
+          {user?.description}
+        </Typography>
+      )}
+      {user?.phone && (
+        <Link
+          href="https://mui.com/material-ui/getting-started/templates/"
+          underline="hover"
+        >
+          {user?.phone}
+        </Link>
+      )}
       <Container
-        component='contact'
-        maxWidth='xs'
+        component="contact"
+        maxWidth="xs"
         sx={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-around',
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-around",
         }}
-        // minHeight='46px'
-        // style={{ minHeight: '60px' }}
       >
-        <IconButton>
-          {user?.phoneIcon && <PhoneIcon style={iconStyle} />}
-        </IconButton>
-        <IconButton>
-          {user?.emailIcon && <EmailIcon style={iconStyle} />}
-        </IconButton>
+        {user?.phoneIcon && (
+          <IconButton>
+            {user?.phoneIcon && <PhoneIcon style={iconStyle} />}
+          </IconButton>
+        )}
+        {user?.emailIcon && (
+          <IconButton>
+            {user?.emailIcon && <EmailIcon style={iconStyle} />}
+          </IconButton>
+        )}
       </Container>
     </Container>
   );
