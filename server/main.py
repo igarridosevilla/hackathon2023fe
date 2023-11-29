@@ -1,4 +1,6 @@
-from quart import Quart, websocket
+from quart import Quart, websocket, request, abort
+from quart.json import jsonify
+
 import json
 import uuid
 import functools
@@ -37,7 +39,7 @@ def require_apikey(view_function):
 
 
 @app.route('/startSession', methods=['POST'])
-@require_apikey
+#@require_apikey
 def start_session():
     # Generate a unique session ID
     session_id = str(uuid.uuid4())
@@ -46,7 +48,7 @@ def start_session():
 
 
 @app.route('/getHistory', methods=['GET'])
-@require_apikey
+#@require_apikey
 def get_history():
     session_id = request.args.get('sessionId')
     if session_id not in sessions:
@@ -55,7 +57,7 @@ def get_history():
 
 
 @app.route('/getUserInfo', methods=['GET'])
-@require_apikey
+#@require_apikey
 async def get_user_info():
     session_id = request.args.get('sessionId')
     if session_id not in sessions:
