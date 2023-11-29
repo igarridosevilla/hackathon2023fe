@@ -1,5 +1,6 @@
 from quart import Quart, websocket, request, abort
 from quart.json import jsonify
+from quart_cors import cors
 
 import json
 import uuid
@@ -8,7 +9,7 @@ import logging
 
 
 app = Quart(__name__)
-
+app = cors(app, allow_origin="*")
 logging.basicConfig(level=logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
 
@@ -89,4 +90,4 @@ async def chat():
             await websocket.send(json.dumps({'type': 'response', 'text': response}))
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5001)
+    app.run(debug=True, port=5001, host='0.0.0.0')
