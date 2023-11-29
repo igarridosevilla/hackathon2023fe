@@ -1,1 +1,2 @@
 Quart==0.19.4
+quart-cors==0.7.0
