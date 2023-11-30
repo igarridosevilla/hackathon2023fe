@@ -65,7 +65,8 @@ const App = () => {
       emailIcon: true,
     },
   ];
-  const agent = window.location.href.charAt(window.location.href.length - 1);
+  const agent =
+    parseInt(window.location.href.charAt(window.location.href.length - 1)) || 1;
 
   return <CenteredGrid agentUser={agents[agent]} />;
 };
