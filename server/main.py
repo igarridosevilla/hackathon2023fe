@@ -1,6 +1,8 @@
 from quart import Quart, websocket, request, abort
 from quart.json import jsonify
 from quart_cors import cors
+from chatbot import create_conversation
+from dotenv import load_dotenv
 
 import json
 import uuid
@@ -15,6 +17,7 @@ app.logger.setLevel(logging.DEBUG)
 
 # Storage for session data
 sessions = {}
+conversation = create_conversation()
 
 user_fixtures = {
     "JohnDoe123": {
@@ -44,7 +47,7 @@ def require_apikey(view_function):
 def start_session():
     # Generate a unique session ID
     session_id = str(uuid.uuid4())
-    sessions[session_id] = []  # Initialize conversation history
+    sessions[session_id] = {"conversation": None}  # Initialize conversation history
     return jsonify(sessionId=session_id), 200
 
 
@@ -76,18 +79,27 @@ async def chat():
             break
         message = json.loads(data)
         # {'type':'message','text':'input/output text','session_id':'auuid'}
-
         if message['type'] == 'message':
-            # Process the message through your chatbot logic
-            response = f"Echo: {message['text']}"
-
-            # Store the message in session history (if needed)
             session_id = message.get('sessionId')
-            if session_id and session_id in sessions:
-                sessions[session_id].append(message['text'])
+            conversation = ""
 
-            # Send the response back to the client
-            await websocket.send(json.dumps({'type': 'response', 'text': response}))
+            if session_id and session_id in sessions:
+                conversation = sessions[session_id]["conversation"]
+            else:
+                conversation = create_conversation()
+                sessions[session_id] = {"conversation":conversation}
+            if conversation is None:
+                conversation = create_conversation()
+                sessions[session_id] = {"conversation":conversation}
+                
+            text_input = message['text']
+            if text_input != 'exit':
+                response = conversation({"question": text_input})
+            # Process the message through your chatbot logic
+                # Store the message in session history (if needed
+                # Send the response back to the client
+                await websocket.send(json.dumps({'type': 'response', 'text': response['text']}))
 
 if __name__ == '__main__':
+    load_dotenv(override=True)
     app.run(debug=True, port=5001, host='0.0.0.0')
