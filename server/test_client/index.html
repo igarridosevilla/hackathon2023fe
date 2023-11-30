@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        #chatbox {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #cccccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        #userInput {
+            width: 80%;
+            padding: 10px;
+        }
+
+        #sendButton,
+        #newSessionButton {
+            width: 18%;
+            padding: 10px;
+        }
+
+        #sessionIdDisplay {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="sessionIdDisplay">Session ID: <span id="sessionId"></span></div>
+    <div id="chatbox"></div>
+    <input type="text" id="userInput" placeholder="Escribe un mensaje...">
+    <button id="sendButton">Send</button>
+    <button id="newSessionButton">New session</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const chatbox = document.getElementById('chatbox');
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            const newSessionButton = document.getElementById('newSessionButton');
+            const sessionIdDisplay = document.getElementById('sessionId');
+            let ws;
+            let sessionId = '';
+
+            async function startNewSession() {
+                try {
+                    const response = await fetch('http://localhost:5001/startSession', {
+                        method: 'POST',
+                    });
+                    const data = await response.json();
+                    sessionId = data.sessionId;
+                    sessionIdDisplay.textContent = sessionId;
+                    initWebSocket();
+                } catch (error) {
+                    console.error('Error starting new session:', error);
+                }
+            }
+
+            function initWebSocket() {
+                if (ws) {
+                    ws.close();
+                }
+                ws = new WebSocket(`ws://localhost:5001/chat?sessionId=${sessionId}`);
+
+                ws.onopen = function () {
+                    console.log('WebSocket connected');
+                };
+
+                ws.onmessage = function (event) {
+                    const message = JSON.parse(event.data);
+                    if (message.type === 'response') {
+                        chatbox.innerHTML += `<div>Coverbot: ${message.text}</div>`;
+                    }
+                };
+
+                ws.onclose = function () {
+                    console.log('WebSocket disconnected.');
+                };
+            }
+
+            sendButton.addEventListener('click', function () {
+                const message = userInput.value;
+                ws.send(JSON.stringify({ type: 'message', text: message, sessionId: sessionId }));
+                chatbox.innerHTML += `<div>You: ${message}</div>`;
+                userInput.value = '';
+            });
+
+            newSessionButton.addEventListener('click', function () {
+                startNewSession();
+                chatbox.innerHTML = '';
+            });
+
+            startNewSession();  // Start a new session when the page loads
+        });
+
+    </script>
+</body>
+
+</html>
