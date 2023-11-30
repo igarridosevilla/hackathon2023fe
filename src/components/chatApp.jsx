@@ -5,12 +5,15 @@ import ChatIcon from "@mui/icons-material/Chat";
 import IconButton from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import Box from "@mui/material/Box";
+import LinearProgress from "@mui/material/LinearProgress";
 
-const ChatApp = () => {
+const ChatApp = (bot) => {
   const [sessionId, setSessionId] = useState(null);
   const [webSocket, setWebSocket] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
+  const [progress, setProgress] = useState(0);
+
   const paperRef = useRef();
 
   useEffect(() => {
@@ -22,6 +25,15 @@ const ChatApp = () => {
   useEffect(() => {
     startSession();
   }, []);
+
+  useEffect(() => {
+    setProgress(() => {
+      return Math.min(
+        messages.filter((msg) => msg.sender == "user").length * 5,
+        100
+      );
+    });
+  }, [messages]);
 
   // Function to start a session
   const startSession = async () => {
@@ -89,38 +101,14 @@ const ChatApp = () => {
       alt={"Avatar"}
       sx={{
         bgcolor: "secondary.main",
+        border: "2px solid #007585",
       }}
-      src={
-        "https://static.coverwallet.com/logos-catalog/agent-avatar-495987bb-e03e-4344-8add-81093d6f76b4.png"
-      }
+      src={bot.user.avatar.src}
     />
   );
+  console.log(bot);
 
   const UserMessage = (message, index) => (
-    <div
-      key={index}
-      style={{
-        display: "flex",
-        marginBottom: 16,
-        placeItems: "center",
-      }}
-    >
-      <UserAvatar />
-      <Typography
-        variant="body1"
-        color={"primary.text"}
-        style={{
-          marginLeft: 8,
-          textAlign: "left",
-          placeItems: "center",
-        }}
-      >
-        {message.message.text}
-      </Typography>
-    </div>
-  );
-
-  const BotMessage = (message, index) => (
     <div
       key={index}
       style={{
@@ -130,14 +118,62 @@ const ChatApp = () => {
         placeItems: "center",
       }}
     >
-      <Typography
-        variant="body1"
-        color={"textSecondary"}
-        style={{ marginRight: 8, textAlign: "right" }}
-      >
-        {message.message.text}
-      </Typography>
+      <div>
+        <Typography
+          variant="h6"
+          color={"secondary.text"}
+          style={{ marginRight: 16, textAlign: "right", fontSize: "1.1rem" }}
+        >
+          You{" "}
+        </Typography>
+        <Typography
+          variant="body1"
+          color={"primary.text"}
+          style={{ marginRight: 16, textAlign: "right", fontSize: "1.1rem" }}
+        >
+          {message.message.text}
+        </Typography>
+      </div>
+      <UserAvatar />
+    </div>
+  );
+
+  const BotMessage = (message, index) => (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        marginBottom: 16,
+        placeItems: "center",
+      }}
+    >
       <BotAvatar />
+      <div>
+        <Typography
+          variant="h6"
+          color={"secondary.text"}
+          style={{
+            marginLeft: 16,
+            textAlign: "left",
+            placeItems: "center",
+            fontSize: "1.1rem",
+          }}
+        >
+          {bot.user.name}
+        </Typography>
+        <Typography
+          variant="body1"
+          color={"secondary.text"}
+          style={{
+            marginLeft: 16,
+            textAlign: "left",
+            placeItems: "center",
+            fontSize: "1.1rem",
+          }}
+        >
+          {message.message.text}
+        </Typography>
+      </div>
     </div>
   );
 
@@ -149,73 +185,100 @@ const ChatApp = () => {
     );
 
   return (
-    <Grid
-      container
-      spacing={2}
-      sx={{
-        marginTop: 12,
-      }}
-    >
-      {/* Zona de mensajes */}
+    <>
       <Grid
         item
         xs={12}
-        md={12}
+        md={11.5}
         style={{
           display: "flex",
-          height: "100vh",
+          justifyContent: "center",
         }}
       >
-        <Paper
-          ref={paperRef}
-          elevation={3}
-          style={{
-            flex: 1,
-            overflowY: "auto",
-            height: "calc(100% - 260px)",
-            padding: 16,
-          }}
-        >
-          {messages.map((message, index) => messageComponent(message, index))}
-        </Paper>
-      </Grid>
-
-      {/* Área de entrada de texto */}
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
-        sm={2}
-        sx={{
-          width: "70%",
-          padding: "16px",
-          position: "absolute",
-          bottom: "16px",
-        }} // Set the width to 100%
-      >
-        <TextField
-          autoComplete="given-name"
-          name="firstName"
-          fullWidth
-          id="firstName"
-          label="Message GP-T2 ..."
-          autoFocus
-          multiline
-          value={newMessage}
-          onChange={(e) => setNewMessage(e.target.value)}
-          onKeyDown={handleKeyDown}
-          maxRows={3}
-        />
-        <IconButton
-          aria-label="send"
+        <Box
           sx={{
-            height: "56px",
+            width: "60%",
+            paddingTop: 6,
           }}
         >
-          <SendIcon />
-        </IconButton>
-      </Box>
-    </Grid>
+          <LinearProgress variant="determinate" value={progress} />
+        </Box>
+      </Grid>
+      <Grid
+        container
+        spacing={2}
+        sx={{
+          marginTop: 4,
+        }}
+      >
+        {/* Zona de mensajes */}
+        <Grid
+          item
+          xs={12}
+          md={12}
+          style={{
+            display: "flex",
+            height: "100vh",
+          }}
+        >
+          <Paper
+            ref={paperRef}
+            elevation={3}
+            style={{
+              flex: 1,
+              overflowY: "auto",
+              height: "calc(100% - 260px)",
+              padding: 12,
+              marginRight: "5%",
+              backgroundColor: "#CDDBDE",
+              borderRadius: "16px",
+              border: "2px solid #007585",
+            }}
+          >
+            {messages.map((message, index) => messageComponent(message, index))}
+          </Paper>
+        </Grid>
+
+        {/* Área de entrada de texto */}
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          sm={2}
+          sx={{
+            width: "83%",
+            padding: "16px",
+            position: "absolute",
+            bottom: "16px",
+          }} // Set the width to 100%
+        >
+          <TextField
+            autoComplete="given-name"
+            name="firstName"
+            fullWidth
+            id="firstName"
+            label="Message GP-T2 ..."
+            autoFocus
+            multiline
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyDown={handleKeyDown}
+            maxRows={3}
+            style={{
+              backgroundColor: "#CDDBDE",
+            }}
+          />
+          <IconButton
+            aria-label="send"
+            sx={{
+              height: "56px",
+            }}
+          >
+            <SendIcon />
+          </IconButton>
+        </Box>
+      </Grid>
+    </>
   );
 };
 
