@@ -6,6 +6,7 @@ import IconButton from "@mui/material/Button";
 import SendIcon from "@mui/icons-material/Send";
 import Box from "@mui/material/Box";
 import LinearProgress from "@mui/material/LinearProgress";
+import { marked } from "marked";
 
 const ChatApp = (bot) => {
   const [sessionId, setSessionId] = useState(null);
@@ -106,7 +107,6 @@ const ChatApp = (bot) => {
       src={bot.user.avatar.src}
     />
   );
-  console.log(bot);
 
   const UserMessage = (message, index) => (
     <div
@@ -130,9 +130,10 @@ const ChatApp = (bot) => {
           variant="body1"
           color={"primary.text"}
           style={{ marginRight: 16, textAlign: "right", fontSize: "1.1rem" }}
-        >
-          {message.message.text}
-        </Typography>
+          dangerouslySetInnerHTML={{
+            __html: marked.parse(message.message.text),
+          }}
+        />
       </div>
       <UserAvatar />
     </div>
@@ -170,9 +171,10 @@ const ChatApp = (bot) => {
             placeItems: "center",
             fontSize: "1.1rem",
           }}
-        >
-          {message.message.text}
-        </Typography>
+          dangerouslySetInnerHTML={{
+            __html: marked.parse(message.message.text),
+          }}
+        />
       </div>
     </div>
   );
