@@ -7,10 +7,12 @@ from langchain.chains import ConversationChain
 from langchain.chat_models import AzureChatOpenAI
 from langchain.schema import HumanMessage
 
-from langchain.memory import (ConversationBufferMemory,
-                              ConversationBufferWindowMemory,
-                              ConversationSummaryBufferMemory,
-                              ConversationSummaryMemory)
+from langchain.memory import (
+    ConversationBufferMemory,
+    ConversationBufferWindowMemory,
+    ConversationSummaryBufferMemory,
+    ConversationSummaryMemory,
+)
 
 from langchain.document_loaders import WebBaseLoader
 
@@ -22,8 +24,7 @@ from langchain.prompts import (
 )
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from langchain.chains import (ConversationChain, ConversationalRetrievalChain,
-                              LLMChain)
+from langchain.chains import ConversationChain, ConversationalRetrievalChain, LLMChain
 from langchain.embeddings import OpenAIEmbeddings
 
 from langchain.vectorstores import Chroma
@@ -32,16 +33,16 @@ from langchain.llms import AzureOpenAI
 
 load_dotenv(override=True)
 
-OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
-MODEL_NAME = os.environ['MODEL_NAME']
-DEPLOYMENT_NAME = os.environ['DEPLOYMENT_NAME']
-OPENAI_API_BASE = os.environ['OPENAI_API_BASE']
-OPENAI_API_VERSION = os.environ['OPENAI_API_VERSION']
+OPENAI_API_KEY = os.environ["OPENAI_API_KEY"]
+MODEL_NAME = os.environ["MODEL_NAME"]
+DEPLOYMENT_NAME = os.environ["DEPLOYMENT_NAME"]
+OPENAI_API_BASE = os.environ["OPENAI_API_BASE"]
+OPENAI_API_VERSION = os.environ["OPENAI_API_VERSION"]
 #
 
 
 def create_conversation():
-  prompt_trucking = """
+    prompt_trucking = """
 You are a nice chatbot having a conversation with a human. 
 Your mission is to guide a client to buy an insurance coverage at MoneyWallet. 
 You start the conversation asking the client about its insurance needs. The client will be a trucker.
@@ -63,21 +64,22 @@ Once you get all info, provide an estimate of a quote premium based on the infor
 Finally, finish the conversation indicating that an agent from MoneyWallet will contact soon.
 Show all fields provided by the client in bulletpoints
 """
-  llm = AzureChatOpenAI(temperature=0.2,
-                      openai_api_key=OPENAI_API_KEY,
-                      model_name=MODEL_NAME,
-                      deployment_name=DEPLOYMENT_NAME,
-                      openai_api_base=OPENAI_API_BASE,
-                      openai_api_version=OPENAI_API_VERSION)
-  prompt = ChatPromptTemplate(messages=[
-    SystemMessagePromptTemplate.from_template(prompt_trucking),
-    MessagesPlaceholder(variable_name="chat_history"),
-    HumanMessagePromptTemplate.from_template("{question}")
-  ])
-  memory = ConversationBufferMemory(memory_key="chat_history",
-                                  return_messages=True)
+    llm = AzureChatOpenAI(
+        temperature=0.2,
+        openai_api_key=OPENAI_API_KEY,
+        model_name=MODEL_NAME,
+        deployment_name=DEPLOYMENT_NAME,
+        openai_api_base=OPENAI_API_BASE,
+        openai_api_version=OPENAI_API_VERSION,
+    )
+    prompt = ChatPromptTemplate(
+        messages=[
+            SystemMessagePromptTemplate.from_template(prompt_trucking),
+            MessagesPlaceholder(variable_name="chat_history"),
+            HumanMessagePromptTemplate.from_template("{question}"),
+        ]
+    )
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-  conversation = LLMChain(llm=llm, prompt=prompt, verbose=False, memory=memory)
-  return conversation
-
-
+    conversation = LLMChain(llm=llm, prompt=prompt, verbose=False, memory=memory)
+    return conversation
