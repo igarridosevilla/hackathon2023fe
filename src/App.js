@@ -1,24 +1,8 @@
 import * as React from "react";
-import { Grid } from "@mui/material";
-import { createGlobalStyle } from "styled-components";
-import { useLocation } from "react-router-dom";
 
 import CenteredGrid from "./components/CenteredGrid";
 
 const App = () => {
-  const GlobalStyle = createGlobalStyle`
-  body {
-    margin: 0;
-    padding: 0;
-    font-family: 'Arial', sans-serif;
-    background-color: #EEF6F7; 
-  }
-
-  ::-webkit-scrollbar {
-    display: none;
-}
-`;
-
   const agents = [
     {
       avatar: {
@@ -68,9 +52,22 @@ const App = () => {
       email: false,
       emailIcon: true,
     },
+    {
+      avatar: {
+        alt: "d2c Agent Avatar",
+        src: "https://ca.slack-edge.com/E0306D3MK0A-U03DTN9Q7T8-849a4913e599-512",
+      },
+      name: "Juan Vera",
+      description: "Your Tech Director Advisor",
+      phone: "(646) 844-9933",
+      phoneIcon: true,
+      email: false,
+      emailIcon: true,
+    },
   ];
+  const agent = window.location.href.charAt(window.location.href.length - 1);
 
-  return <CenteredGrid agentUser={agents[0]} />;
+  return <CenteredGrid agentUser={agents[agent]} />;
 };
 
 export default App;

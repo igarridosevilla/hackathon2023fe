@@ -1,7 +1,6 @@
 import * as React from "react";
 import { Grid } from "@mui/material";
 import { createGlobalStyle } from "styled-components";
-import { useLocation } from "react-router-dom";
 
 import Sidebar from "./sideBar";
 import ChatApp from "./chatApp";
