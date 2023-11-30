@@ -18,6 +18,29 @@ const ChatApp = () => {
     }
   }, [messages]);
 
+  // Function to start a session
+  const startSession = async () => {
+    const response = await fetch("http://localhost:5000/startSession", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "X-API-KEY": "12345",
+      },
+    });
+    const data = await response.json();
+    console.log("Received message:", data);
+
+    setSessionId(data.sessionId);
+
+    const socket = new WebSocket("ws://localhost:5000/chat");
+    setWebSocket(socket);
+
+    socket.addEventListener("message", (event) => {
+      const message = JSON.parse(event.data);
+      console.log("Received message:", message);
+    });
+  };
+
   const handleSendMessage = () => {
     if (paperRef.current) {
       paperRef.current.scrollTop = paperRef.current.scrollHeight;
@@ -32,6 +55,7 @@ const ChatApp = () => {
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault(); // Evita que se agregue un salto de línea al textarea
+      // startSession();
       handleSendMessage();
     }
   };
@@ -58,6 +82,56 @@ const ChatApp = () => {
     </Avatar>
   );
 
+  const UserMessage = (message, index) => (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        alignItems: "center",
+        marginBottom: 16,
+      }}
+    >
+      <UserAvatar />
+      <Typography
+        variant="body1"
+        color={"primary"}
+        style={{ marginLeft: 8, textAlign: "left" }}
+      >
+        {message.text}
+      </Typography>
+    </div>
+  );
+
+  const BotMessage = (message, index) => (
+    <div
+      key={index}
+      style={{
+        display: "flex",
+        alignItems: "left",
+        marginBottom: 16,
+        textAlign: "right",
+      }}
+    >
+      <Typography
+        variant="body1"
+        color={"textSecondary"}
+        style={{ marginLeft: 0, textAlign: "right" }}
+      >
+        {message.sender}
+      </Typography>
+      <BotAvatar />
+    </div>
+  );
+
+  const messageComponent = (message, index) => {
+    console.log(message);
+    return message.sender === "user" ? (
+      <UserMessage key={index} message={message} />
+    ) : (
+      <BotMessage key={index} message={message} />
+    );
+  };
+
   return (
     <Grid
       container
@@ -81,28 +155,11 @@ const ChatApp = () => {
           style={{
             flex: 1,
             overflowY: "auto",
-            height: "calc(100% - 232px)",
+            height: "calc(100% - 260px)",
+            padding: 16,
           }}
         >
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              {message.sender === "user" ? <UserAvatar /> : <BotAvatar />}
-              <Typography
-                variant="body1"
-                color={message.sender === "user" ? "primary" : "textSecondary"}
-                style={{ marginLeft: message.sender === "bot" ? 8 : 0 }}
-              >
-                {message.text}
-              </Typography>
-            </div>
-          ))}
+          {messages.map((message, index) => messageComponent(message, index))}
         </Paper>
       </Grid>
 
@@ -130,6 +187,7 @@ const ChatApp = () => {
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           onKeyDown={handleKeyDown}
+          maxRows={3}
         />
         <IconButton
           aria-label="send"

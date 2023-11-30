@@ -3,7 +3,7 @@ import { Grid } from "@mui/material";
 import { createGlobalStyle } from "styled-components";
 
 import Sidebar from "./components/sideBar";
-import ChatApp from "./components/message";
+import ChatApp from "./components/chatApp";
 
 const CenteredGrid = () => {
   const [clientData, setClientData] = React.useState(true);
@@ -61,7 +61,7 @@ const CenteredGrid = () => {
           <img src="/images/logo.png" alt="test" loading="lazy" width="120" />
           <Sidebar user={agent} />
         </Grid>
-        {clientData ? (
+        {/* {clientData ? (
           <>
             <Grid item xs={12} sm={8}>
               <ChatApp />
@@ -71,12 +71,12 @@ const CenteredGrid = () => {
             </Grid>
           </>
         ) : (
-          <>
-            <Grid item xs={12} sm={9}>
-              <ChatApp />
-            </Grid>
-          </>
-        )}
+          <> */}
+        <Grid item xs={12} sm={9}>
+          <ChatApp />
+        </Grid>
+        {/* </>
+        )} */}
       </Grid>
     </>
   );

@@ -14,7 +14,6 @@ export default function SideBar({ user }) {
       component="agentSideBar"
       maxWidth="xs"
       sx={{
-        marginTop: 8,
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
