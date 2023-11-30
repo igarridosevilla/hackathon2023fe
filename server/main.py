@@ -69,8 +69,28 @@ async def get_user_info():
     if session_id not in sessions:
         return jsonify(error="Session not found"), 404
     # Assuming a fixed user fixture for demonstration
-    user_info = user_fixtures.get("JohnDoe123", {})
-    return jsonify(user_info), 200
+    if os.environ["DEV_MOCKS"] == "true":
+        user_info = user_fixtures.get("JohnDoe123", {})
+        return jsonify(user_info), 200
+    conversation = sessions[session_id]["conversation"]
+    if conversation is None:
+        return {}
+    prompt = """
+    give me a json with the fields you have extracted from the conversation, this is the format
+    {
+        "name":"",
+        "email":"",
+        "telephone":"",
+        "state":"",
+        "number of trucks":"",
+        "annual_revenue":"",
+        "vin":"",
+        "extra_information":""
+    }
+    If you dont have any fields left if empty. DO NOT RESPOND WITH CONVERSATIONAL ONLY IN THIS CASE, JUST DATA
+    """
+    result = conversation({"question": prompt})
+    return jsonify(result["text"]), 200
 
 
 @app.websocket("/chat")

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
     <style>
+        /* CSS styles */
         #chatbox {
             height: 300px;
             overflow-y: auto;
@@ -14,18 +15,22 @@
             margin-bottom: 10px;
         }
 
-        #userInput {
+        #userInput,
+        #userInfoDisplay {
             width: 80%;
             padding: 10px;
+            margin-bottom: 10px;
         }
 
         #sendButton,
-        #newSessionButton {
+        #newSessionButton,
+        #getUserInfoButton {
             width: 18%;
             padding: 10px;
         }
 
-        #sessionIdDisplay {
+        #sessionIdDisplay,
+        #userInfoDisplay {
             margin-bottom: 10px;
         }
     </style>
@@ -33,10 +38,12 @@
 
 <body>
     <div id="sessionIdDisplay">Session ID: <span id="sessionId"></span></div>
+    <button id="getUserInfoButton">Obtener Información del Usuario</button>
+    <div id="userInfoDisplay"></div>
     <div id="chatbox"></div>
     <input type="text" id="userInput" placeholder="Escribe un mensaje...">
-    <button id="sendButton">Send</button>
-    <button id="newSessionButton">New session</button>
+    <button id="sendButton">Enviar</button>
+    <button id="newSessionButton">Nueva Sesión</button>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -44,9 +51,26 @@
             const userInput = document.getElementById('userInput');
             const sendButton = document.getElementById('sendButton');
             const newSessionButton = document.getElementById('newSessionButton');
+            const getUserInfoButton = document.getElementById('getUserInfoButton');
             const sessionIdDisplay = document.getElementById('sessionId');
+            const userInfoDisplay = document.getElementById('userInfoDisplay');
             let ws;
             let sessionId = '';
+
+            async function getUserInfo() {
+                try {
+                    const response = await fetch(`http://localhost:5001/getUserInfo?sessionId=${sessionId}`, {
+                        method: 'GET',
+                        headers: {
+                            'X-API-KEY': '12345'
+                        }
+                    });
+                    const data = await response.json();
+                    userInfoDisplay.textContent = JSON.stringify(data);
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                }
+            }
 
             async function startNewSession() {
                 try {
@@ -94,6 +118,9 @@
             newSessionButton.addEventListener('click', function () {
                 startNewSession();
                 chatbox.innerHTML = '';
+            });
+            getUserInfoButton.addEventListener('click', function () {
+                getUserInfo();
             });
 
             startNewSession();  // Start a new session when the page loads
