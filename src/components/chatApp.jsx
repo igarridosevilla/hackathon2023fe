@@ -131,7 +131,7 @@ const ChatApp = (bot) => {
           color={"primary.text"}
           style={{ marginRight: 16, textAlign: "right", fontSize: "1.1rem" }}
           dangerouslySetInnerHTML={{
-            __html: marked.parse(message.message.text),
+            __html: marked.parse(message.message.text).replace("<p>", "<div>"),
           }}
         />
       </div>
@@ -172,7 +172,7 @@ const ChatApp = (bot) => {
             fontSize: "1.1rem",
           }}
           dangerouslySetInnerHTML={{
-            __html: marked.parse(message.message.text),
+            __html: marked.parse(message.message.text).replace("<p>", "<div>"),
           }}
         />
       </div>
