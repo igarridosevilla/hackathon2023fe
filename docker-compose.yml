@@ -14,6 +14,10 @@ services:
     networks:
       - my_network
     build: ./server
+    env_file: server/.env
+    volumes:
+      - ./server:/usr/src/app
 
 networks:
   my_network:
+  
