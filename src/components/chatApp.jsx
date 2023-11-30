@@ -1,44 +1,59 @@
-import React, { useState, useRef, useEffect } from "react";
-import { TextField, Paper, Typography, Grid, Avatar } from "@mui/material";
+import React, { useState, useRef, useEffect } from 'react';
+import { TextField, Paper, Typography, Grid, Avatar } from '@mui/material';
 // import SendIcon from '@mui/icons-material/Send';
-import ChatIcon from "@mui/icons-material/Chat";
-import IconButton from "@mui/material/Button";
-import SendIcon from "@mui/icons-material/Send";
-import Box from "@mui/material/Box";
+import ChatIcon from '@mui/icons-material/Chat';
+import IconButton from '@mui/material/Button';
+import SendIcon from '@mui/icons-material/Send';
+import Box from '@mui/material/Box';
 
 const ChatApp = () => {
+  const [sessionId, setSessionId] = useState(null);
+  const [webSocket, setWebSocket] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [newMessage, setNewMessage] = useState("");
+  const [newMessage, setNewMessage] = useState('');
   const paperRef = useRef();
 
   useEffect(() => {
     if (paperRef.current) {
-      // Scroll to the bottom of the Paper component
       paperRef.current.scrollTop = paperRef.current.scrollHeight;
     }
   }, [messages]);
 
+  useEffect(() => {
+    startSession();
+  }, []);
+
   // Function to start a session
   const startSession = async () => {
-    const response = await fetch("http://localhost:5000/startSession", {
-      method: "POST",
+    const response = await fetch('http://localhost:5001/startSession', {
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
-        "X-API-KEY": "12345",
+        'Content-Type': 'application/json',
+        'X-API-KEY': '12345',
       },
     });
     const data = await response.json();
-    console.log("Received message:", data);
 
     setSessionId(data.sessionId);
 
-    const socket = new WebSocket("ws://localhost:5000/chat");
+    const socket = new WebSocket('ws://localhost:5001/chat');
     setWebSocket(socket);
 
-    socket.addEventListener("message", (event) => {
+    socket.addEventListener('message', (event) => {
       const message = JSON.parse(event.data);
-      console.log("Received message:", message);
+      setMessages((prev) => [...prev, { text: message.text, sender: 'bot' }]);
     });
+  };
+
+  const sendMessage = (text) => {
+    if (webSocket && webSocket.readyState === WebSocket.OPEN) {
+      const message = {
+        type: 'message',
+        text: text,
+        sessionId: sessionId,
+      };
+      webSocket.send(JSON.stringify(message));
+    }
   };
 
   const handleSendMessage = () => {
@@ -46,16 +61,16 @@ const ChatApp = () => {
       paperRef.current.scrollTop = paperRef.current.scrollHeight;
     }
 
-    if (newMessage.trim() !== "") {
-      setMessages([...messages, { text: newMessage, sender: "user" }]);
-      setNewMessage("");
+    if (newMessage.trim() !== '') {
+      setMessages([...messages, { text: newMessage, sender: 'user' }]);
+      sendMessage(newMessage);
+      setNewMessage('');
     }
   };
 
   const handleKeyDown = (e) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       e.preventDefault(); // Evita que se agregue un salto de línea al textarea
-      // startSession();
       handleSendMessage();
     }
   };
@@ -64,13 +79,13 @@ const ChatApp = () => {
     <Avatar style={{ margin: 8 }}>
       <Avatar
         src={
-          "https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F59%2FUser-avatar.svg%2F800px-User-avatar.svg.png&tbnid=QhTI36alBacoyM&vet=12ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz..i&imgrefurl=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AUser-avatar.svg&docid=jkSSRW6HEZViEM&w=800&h=800&q=user%20avatar&ved=2ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz"
+          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F5%2F59%2FUser-avatar.svg%2F800px-User-avatar.svg.png&tbnid=QhTI36alBacoyM&vet=12ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz..i&imgrefurl=https%3A%2F%2Fcommons.wikimedia.org%2Fwiki%2FFile%3AUser-avatar.svg&docid=jkSSRW6HEZViEM&w=800&h=800&q=user%20avatar&ved=2ahUKEwj3jrH3oemCAxXVmScCHY_KDV0QMygAegQIARBz'
         }
-        alt="User Avatar"
+        alt='User Avatar'
         style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: "50%",
+          width: '100%',
+          height: '100%',
+          borderRadius: '50%',
         }}
       />
     </Avatar>
@@ -86,18 +101,18 @@ const ChatApp = () => {
     <div
       key={index}
       style={{
-        display: "flex",
-        alignItems: "center",
+        display: 'flex',
+        alignItems: 'center',
         marginBottom: 16,
       }}
     >
       <UserAvatar />
       <Typography
-        variant="body1"
-        color={"primary"}
-        style={{ marginLeft: 8, textAlign: "left" }}
+        variant='body1'
+        color={'primary'}
+        style={{ marginLeft: 8, textAlign: 'left' }}
       >
-        {message.text}
+        {message.message.text}
       </Typography>
     </div>
   );
@@ -106,31 +121,29 @@ const ChatApp = () => {
     <div
       key={index}
       style={{
-        display: "flex",
-        alignItems: "left",
+        display: 'flex',
+        alignItems: 'left',
         marginBottom: 16,
-        textAlign: "right",
+        textAlign: 'right',
       }}
     >
       <Typography
-        variant="body1"
-        color={"textSecondary"}
-        style={{ marginLeft: 0, textAlign: "right" }}
+        variant='body1'
+        color={'textSecondary'}
+        style={{ marginLeft: 0, textAlign: 'right' }}
       >
-        {message.sender}
+        {message.message.text}
       </Typography>
       <BotAvatar />
     </div>
   );
 
-  const messageComponent = (message, index) => {
-    console.log(message);
-    return message.sender === "user" ? (
+  const messageComponent = (message, index) =>
+    message.sender === 'user' ? (
       <UserMessage key={index} message={message} />
     ) : (
       <BotMessage key={index} message={message} />
     );
-  };
 
   return (
     <Grid
@@ -146,16 +159,16 @@ const ChatApp = () => {
         xs={12}
         md={12}
         style={{
-          display: "flex",
-          height: "100vh",
+          display: 'flex',
+          height: '100vh',
         }}
       >
         <Paper
           ref={paperRef}
           style={{
             flex: 1,
-            overflowY: "auto",
-            height: "calc(100% - 260px)",
+            overflowY: 'auto',
+            height: 'calc(100% - 260px)',
             padding: 16,
           }}
         >
@@ -165,23 +178,23 @@ const ChatApp = () => {
 
       {/* Área de entrada de texto */}
       <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="space-between"
+        display='flex'
+        alignItems='center'
+        justifyContent='space-between'
         sm={2}
         sx={{
-          width: "70%",
-          padding: "16px",
-          position: "absolute",
-          bottom: "16px",
+          width: '70%',
+          padding: '16px',
+          position: 'absolute',
+          bottom: '16px',
         }} // Set the width to 100%
       >
         <TextField
-          autoComplete="given-name"
-          name="firstName"
+          autoComplete='given-name'
+          name='firstName'
           fullWidth
-          id="firstName"
-          label="Message GP-T2 ..."
+          id='firstName'
+          label='Message GP-T2 ...'
           autoFocus
           multiline
           value={newMessage}
@@ -190,9 +203,9 @@ const ChatApp = () => {
           maxRows={3}
         />
         <IconButton
-          aria-label="send"
+          aria-label='send'
           sx={{
-            height: "56px",
+            height: '56px',
           }}
         >
           <SendIcon />
