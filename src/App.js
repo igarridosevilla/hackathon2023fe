@@ -7,10 +7,10 @@ const App = () => {
     {
       avatar: {
         alt: "d2c Agent Avatar",
-        src: "https://static.coverwallet.com/logos-catalog/agent-avatar-495987bb-e03e-4344-8add-81093d6f76b4.png",
+        src: "https://www.intelligentinsurer.com/media/image/roberto-pinto-president-of-digital-client-solutions-at-aon-1.jpg",
       },
-      name: "Chris",
-      description: "Your Bot Advisor",
+      name: "Roberto Pinto",
+      description: "Your Boss Advisor",
       phone: "(646) 844-9933",
       phoneIcon: true,
       email: false,
@@ -19,10 +19,10 @@ const App = () => {
     {
       avatar: {
         alt: "d2c Agent Avatar",
-        src: "https://www.intelligentinsurer.com/media/image/roberto-pinto-president-of-digital-client-solutions-at-aon-1.jpg",
+        src: "https://static.coverwallet.com/logos-catalog/agent-avatar-495987bb-e03e-4344-8add-81093d6f76b4.png",
       },
-      name: "Roberto Pinto",
-      description: "Your Boss Advisor",
+      name: "Chris",
+      description: "Your Bot Advisor",
       phone: "(646) 844-9933",
       phoneIcon: true,
       email: false,
@@ -66,7 +66,7 @@ const App = () => {
     },
   ];
   const agent =
-    parseInt(window.location.href.charAt(window.location.href.length - 1)) || 1;
+    parseInt(window.location.href.charAt(window.location.href.length - 1)) || 0;
 
   return <CenteredGrid agentUser={agents[agent]} />;
 };
