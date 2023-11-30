@@ -7,6 +7,8 @@ This repository contains the code for a simple chatbot application using Flask (
 - Python 3.6+
 - Quart
 
+You will need a `.env` file with some configuration, ask to your teammates. This file should ve in `./server/.env`
+
 ## Installation
 
 On the root folder of the repo
@@ -19,6 +21,8 @@ pip install -r requirements.txt
 python main.py
 ```
 
+To use the test client, open in a web browser `./server/test_client/index.html`
+
 This will start the server on localhost at the default port (8000). You can access the REST API endpoints and establish WebSocket connections at http://localhost:5000.
 
 ## Test it
@@ -28,7 +32,7 @@ This will start the server on localhost at the default port (8000). You can acce
 This endpoint starts a new chatbot session and returns a session ID.
 
 ```bash
-curl -X POST http://localhost:5000/startSession -H "X-API-KEY: 12345"
+curl -X POST http://localhost:5000/startSession 
 ```
 
 ### 2. Retrieve the Conversation History
@@ -37,7 +41,7 @@ This endpoint retrieves the conversation history for a given session. Replace <s
 
 ```bash
 Copy code
-curl -X GET "http://localhost:5000/getHistory?sessionId=<session_id>" -H "X-API-KEY: 12345"
+curl -X GET "http://localhost:5000/getHistory?sessionId=<session_id>" 
 ```
 
 ### 3. Retrieve User Information
@@ -46,5 +50,5 @@ This endpoint retrieves user information for a given session. Again, replace <se
 
 ```bash
 Copy code
-curl -X GET "http://localhost:5000/getUserInfo?sessionId=<session_id>" -H "X-API-KEY: 12345"
+curl -X GET "http://localhost:5000/getUserInfo?sessionId=<session_id>" 
 ```
