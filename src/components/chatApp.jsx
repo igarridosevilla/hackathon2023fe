@@ -106,7 +106,6 @@ const ChatApp = (bot) => {
       src={bot.user.avatar.src}
     />
   );
-  console.log(bot);
 
   const UserMessage = (message, index) => (
     <div
