@@ -3,17 +3,15 @@ import { Grid } from "@mui/material";
 import { createGlobalStyle } from "styled-components";
 
 import Sidebar from "./components/sideBar";
-import ChatApp from "./components/message";
+import ChatApp from "./components/chatApp";
 
 const CenteredGrid = () => {
-  const [clientData, setClientData] = React.useState(true);
-
   const GlobalStyle = createGlobalStyle`
   body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background-color: #e5e5e5; 
+    background-color: #EEF6F7; 
   }
 `;
 
@@ -47,7 +45,6 @@ const CenteredGrid = () => {
     <>
       <GlobalStyle />
       <Grid container spacing={1}>
-        {/* First column 20% */}
         <Grid
           item
           xs={12}
@@ -61,22 +58,9 @@ const CenteredGrid = () => {
           <img src="/images/logo.png" alt="test" loading="lazy" width="120" />
           <Sidebar user={agent} />
         </Grid>
-        {clientData ? (
-          <>
-            <Grid item xs={12} sm={8}>
-              <ChatApp />
-            </Grid>
-            <Grid item xs={12} sm={2}>
-              <Sidebar user={user} />
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid item xs={12} sm={9}>
-              <ChatApp />
-            </Grid>
-          </>
-        )}
+        <Grid item xs={12} sm={9}>
+          <ChatApp />
+        </Grid>
       </Grid>
     </>
   );
